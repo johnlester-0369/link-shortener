@@ -1,5 +1,5 @@
 const config = {
   semi: false,
   singleQuote: true,
-};
-export default config;
+}
+export default config
