@@ -1,0 +1,91 @@
+
+.dark {
+ /* ==================== PRIMARY ==================== */
+ --color-primary: 196 216 253;
+ --color-on-primary: 14 30 62;
+ --color-primary-container: 51 87 162;
+ --color-on-primary-container: 221 232 254;
+
+ /* ==================== SECONDARY ==================== */
+ --color-secondary: 216 209 253;
+ --color-on-secondary: 33 23 61;
+ --color-secondary-container: 96 71 161;
+ --color-on-secondary-container: 232 228 254;
+
+ /* ==================== TERTIARY ==================== */
+ --color-tertiary: 244 197 249;
+ --color-on-tertiary: 48 15 52;
+ --color-tertiary-container: 129 54 139;
+ --color-on-tertiary-container: 247 222 250;
+
+ /* ==================== SURFACE SYSTEM ==================== */
+ --color-surface: 31 43 61;
+ --color-on-surface: 255 255 255;
+ --color-surface-variant: 50 65 87;
+ --color-on-surface-variant: 202 213 226;
+ --color-surface-container-lowest: 31 43 61;
+ --color-surface-container-low: 23 32 49;
+ --color-surface-container: 20 28 44;
+ --color-surface-container-high: 16 24 40;
+ --color-surface-container-highest: 3 7 18;
+ --color-surface-bright: 98 116 142;
+ --color-surface-dim: 3 7 18;
+
+ /* ==================== INVERSE ==================== */
+ --color-inverse-surface: 241 245 249;
+ --color-inverse-on-surface: 29 41 58;
+ --color-inverse-primary: 68 114 210;
+
+ /* ==================== OUTLINE ==================== */
+ --color-outline: 144 161 185;
+ --color-outline-variant: 69 85 108;
+
+ /* ==================== SCRIM & SHADOW ==================== */
+ --color-scrim: 0 0 0;
+ --color-shadow: 0 0 0;
+
+ /* ==================== ERROR ==================== */
+ --color-error: 255 100 103;
+ --color-on-error: 70 8 9;
+ --color-error-container: 130 24 26;
+ --color-on-error-container: 255 226 226;
+
+ /* ==================== SUCCESS ==================== */
+ --color-success: 5 223 114;
+ --color-on-success: 3 46 21;
+ --color-success-container: 13 84 43;
+ --color-on-success-container: 220 252 231;
+
+ /* ==================== WARNING ==================== */
+ --color-warning: 255 185 0;
+ --color-on-warning: 70 25 1;
+ --color-warning-container: 151 60 0;
+ --color-on-warning-container: 254 243 198;
+
+ /* ==================== INFO ==================== */
+ --color-info: 0 188 255;
+ --color-on-info: 5 47 74;
+ --color-info-container: 2 74 112;
+ --color-on-info-container: 223 242 254;
+
+ /* ==================== PRIMARY GRADIENT ==================== */
+ --color-gradient-primary: linear-gradient(135deg, rgb(39, 83, 179) 0%, rgb(15, 99, 134) 100%);
+
+ /* ==================== SECONDARY GRADIENT ==================== */
+ --color-gradient-secondary: linear-gradient(135deg, rgb(97, 66, 171) 0%, rgb(39, 83, 179) 100%);
+
+ /* ==================== TERTIARY GRADIENT ==================== */
+ --color-gradient-tertiary: linear-gradient(135deg, rgb(131, 51, 142) 0%, rgb(97, 66, 171) 100%);
+
+ /* ==================== ERROR GRADIENT ==================== */
+ --color-gradient-error: linear-gradient(135deg, rgb(161, 39, 31) 0%, rgb(133, 73, 13) 100%);
+
+ /* ==================== SUCCESS GRADIENT ==================== */
+ --color-gradient-success: linear-gradient(135deg, rgb(16, 109, 48) 0%, rgb(16, 105, 91) 100%);
+
+ /* ==================== WARNING GRADIENT ==================== */
+ --color-gradient-warning: linear-gradient(135deg, rgb(146, 62, 12) 0%, rgb(121, 82, 13) 100%);
+
+ /* ==================== INFO GRADIENT ==================== */
+ --color-gradient-info: linear-gradient(135deg, rgb(15, 95, 150) 0%, rgb(16, 102, 118) 100%);
+}
