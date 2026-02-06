@@ -2,6 +2,10 @@
 
 import React from 'react'
 import { cn } from '@/utils/cn.util'
+import {
+  forwardRefWithAs,
+  type PolymorphicComponentPropsWithRef,
+} from '@/utils/polymorphic.util'
 
 /**
  * Button visual style variants
@@ -42,7 +46,10 @@ export type ButtonColor =
 
 export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg'
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+/**
+ * Base props for Button component (excluding HTML attributes)
+ */
+export type ButtonOwnProps = {
   /** Visual variant style */
   variant?: ButtonVariant
   /** Color scheme - defaults based on variant if not specified */
@@ -64,6 +71,17 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   /** Make button pill-shaped (fully rounded) */
   pill?: boolean
 }
+
+/**
+ * Polymorphic Button props - supports `as` prop for rendering as different elements
+ * @example
+ * ```tsx
+ * <Button as="a" href="/home">Link Button</Button>
+ * <Button as={Link} to="/about">Router Link</Button>
+ * ```
+ */
+export type ButtonProps<T extends React.ElementType = 'button'> =
+  PolymorphicComponentPropsWithRef<T, ButtonOwnProps>
 
 /**
  * Base button styles - shared across all variants
@@ -423,87 +441,88 @@ function getBorderRadiusClass(variant: ButtonVariant, pill: boolean): string {
  * // With icons and loading
  * <Button leftIcon={<Icon />}>With Icon</Button>
  * <Button isLoading>Loading</Button>
+ *
+ * // Polymorphic usage - render as different elements
+ * <Button as="a" href="/home">Link Button</Button>
+ * <Button as={Link} to="/about">Router Link</Button>
  * ```
  */
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      variant = 'filled',
-      color,
-      size = 'md',
-      isLoading = false,
-      leftIcon,
-      rightIcon,
-      fullWidth = false,
-      iconOnly = false,
-      underline = false,
-      pill = false,
-      children,
-      className,
-      disabled,
-      type,
-      ...props
-    },
-    ref,
-  ) => {
-    const isLinkVariant = variant === 'link'
-    const isUnstyled = variant === 'unstyled'
+const Button = forwardRefWithAs<'button', ButtonOwnProps>((props, ref) => {
+  const {
+    as,
+    variant = 'filled',
+    color,
+    size = 'md',
+    isLoading = false,
+    leftIcon,
+    rightIcon,
+    fullWidth = false,
+    iconOnly = false,
+    underline = false,
+    pill = false,
+    children,
+    className,
+    disabled,
+    type,
+    ...rest
+  } = props
 
-    // Resolve color with default based on variant
-    const resolvedColor = color ?? getDefaultColor(variant)
+  const Component = as || 'button'
+  const isLinkVariant = variant === 'link'
+  const isUnstyled = variant === 'unstyled'
 
-    // Determine which size classes to use
-    const getSizeClasses = (): string => {
-      if (isUnstyled) return ''
-      if (iconOnly) return iconOnlySizeClasses[size]
-      if (isLinkVariant) return linkSizeClasses[size]
-      return sizeClasses[size]
-    }
+  // Resolve color with default based on variant
+  const resolvedColor = color ?? getDefaultColor(variant)
 
-    const computedClass = cn(
-      isLinkVariant ? linkBaseStyles : baseStyles,
-      getBorderRadiusClass(variant, pill),
-      getVariantClasses(variant, resolvedColor),
-      !isUnstyled && getSizeClasses(),
-      fullWidth && 'w-full',
-      isLinkVariant && underline && 'underline underline-offset-2',
-      className,
-    )
+  // Determine which size classes to use
+  const getSizeClasses = (): string => {
+    if (isUnstyled) return ''
+    if (iconOnly) return iconOnlySizeClasses[size]
+    if (isLinkVariant) return linkSizeClasses[size]
+    return sizeClasses[size]
+  }
 
-    const isDisabled = Boolean(disabled || isLoading)
+  const computedClass = cn(
+    isLinkVariant ? linkBaseStyles : baseStyles,
+    getBorderRadiusClass(variant, pill),
+    getVariantClasses(variant, resolvedColor),
+    !isUnstyled && getSizeClasses(),
+    fullWidth && 'w-full',
+    isLinkVariant && underline && 'underline underline-offset-2',
+    className,
+  )
 
-    return (
-      <button
-        ref={ref}
-        type={type ?? 'button'}
-        className={computedClass}
-        disabled={isDisabled}
-        aria-busy={isLoading || undefined}
-        aria-disabled={isDisabled || undefined}
-        {...props}
-      >
-        {/* Content container with z-10 to stay above state layer (z-1) */}
-        <span className="relative z-10 inline-flex items-center justify-center gap-[inherit]">
-          {isLoading ? (
-            <Spinner size={getSpinnerSize(size)} />
-          ) : (
-            leftIcon && (
-              <span className="flex items-center shrink-0">{leftIcon}</span>
-            )
-          )}
-          {!iconOnly && (
-            <span className={isLoading ? 'sr-only' : undefined}>
-              {children}
-            </span>
-          )}
-          {!isLoading && rightIcon && (
-            <span className="flex items-center shrink-0">{rightIcon}</span>
-          )}
-        </span>
-      </button>
-    )
-  },
-)
+  const isDisabled = Boolean(disabled || isLoading)
+
+  return (
+    <Component
+      ref={ref}
+      type={Component === 'button' ? (type ?? 'button') : undefined}
+      disabled={Component === 'button' ? isDisabled : undefined}
+      className={computedClass}
+      aria-busy={isLoading || undefined}
+      aria-disabled={isDisabled || undefined}
+      {...rest}
+    >
+      {/* Content container with z-10 to stay above state layer (z-1) */}
+      <span className="relative z-10 inline-flex items-center justify-center gap-[inherit]">
+        {isLoading ? (
+          <Spinner size={getSpinnerSize(size)} />
+        ) : (
+          leftIcon && (
+            <span className="flex items-center shrink-0">{leftIcon}</span>
+          )
+        )}
+        {!iconOnly && (
+          <span className={isLoading ? 'sr-only' : undefined}>{children}</span>
+        )}
+        {!isLoading && rightIcon && (
+          <span className="flex items-center shrink-0">{rightIcon}</span>
+        )}
+      </span>
+    </Component>
+  )
+})
 
 Button.displayName = 'Button'
 
