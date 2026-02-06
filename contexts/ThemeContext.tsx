@@ -28,13 +28,23 @@ export const useTheme = () => {
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [theme, setThemeState] = useState<Theme>(getInitialTheme)
+  // Initialize with 'light' to prevent SSR hydration mismatch
+  const [theme, setThemeState] = useState<Theme>('light')
+  const [mounted, setMounted] = useState(false)
+
+  // Read theme from localStorage after component mounts (client-side only)
+  useEffect(() => {
+    setMounted(true)
+    const initialTheme = getInitialTheme()
+    setThemeState(initialTheme)
+  }, [])
 
   // Apply theme to DOM whenever it changes
   useEffect(() => {
+    if (!mounted) return
     applyTheme(theme)
     saveTheme(theme)
-  }, [theme])
+  }, [theme, mounted])
 
   /**
    * Set theme with validation

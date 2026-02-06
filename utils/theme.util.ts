@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Theme Management Utilities
  *
@@ -40,6 +42,10 @@ export function isValidTheme(value: unknown): value is Theme {
  */
 export function getSystemTheme(): Theme {
   try {
+    // SSR safety check - return default if window is not available
+    if (typeof window === 'undefined') {
+      return 'light'
+    }
     const prefersDark = window.matchMedia(
       '(prefers-color-scheme: dark)',
     ).matches
@@ -62,6 +68,10 @@ export function getSystemTheme(): Theme {
  */
 export function getInitialTheme(): Theme {
   try {
+    // SSR safety check - return default during server-side rendering
+    if (typeof window === 'undefined') {
+      return 'light'
+    }
     const stored = localStorage.getItem(THEME_STORAGE_KEY)
 
     // If valid theme exists in storage, use it
