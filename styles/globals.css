@@ -530,23 +530,6 @@
    line-height: var(--typography-body-medium-line-height);
  }
 
- a {
-   color: rgb(var(--color-primary) / 1);
-   text-decoration: none;
-   letter-spacing: inherit;
-   transition: color var(--duration-fast) var(--easing-standard);
- }
-
- a:hover {
-   color: rgb(var(--color-primary) / calc(1 - var(--state-hover-opacity)));
- }
-
- a:focus-visible {
-   outline: 2px solid rgb(var(--color-primary) / 1);
-   outline-offset: 2px;
-   border-radius: 2px;
- }
-
  nav a:hover {
    text-decoration: none;
  }
