@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useCallback } from 'react'
 import { Copy, Check } from 'lucide-react'
 import { cn } from '@/utils/cn.util'
