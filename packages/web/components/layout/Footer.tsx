@@ -1,6 +1,7 @@
 
 import React from 'react'
 import Link from '@/components/ui/Link'
+import Divider from '@/components/ui/Divider'
 import { Link2, Github, ExternalLink } from 'lucide-react'
 
 const Footer: React.FC = () => {
@@ -58,7 +59,7 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Divider */}
-            <div className="mx-auto mb-8 h-px w-32 bg-gradient-to-r from-transparent via-outline-variant to-transparent"></div>
+            <Divider />
 
             {/* Copyright & Tech Stack */}
             <div className="space-y-2">
