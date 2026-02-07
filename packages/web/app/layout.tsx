@@ -1,8 +1,7 @@
-
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import '@/styles/globals.css'
-import { ThemeProvider } from '@/contexts/ThemeContext'
+import { ThemeProvider } from 'next-themes'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -35,9 +34,9 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: {
       index: true,
-      follow: true
-    }
-  }
+      follow: true,
+    },
+  },
 }
 
 export default function RootLayout({
@@ -46,11 +45,30 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        {/* 
+          next-themes ThemeProvider automatically injects a script that:
+          1. Runs BEFORE React hydration (blocking script in <head>)
+          2. Reads localStorage and applies theme class to <html>
+          3. Prevents FOUC (Flash of Unstyled Content)
+          
+          Configuration:
+          - attribute="class": Uses class attribute for Tailwind CSS compatibility
+          - storageKey="theme": Matches your existing localStorage key
+          - defaultTheme="system": Defaults to system preference (light/dark)
+          - enableSystem: Enables system theme detection
+        */}
+        <ThemeProvider
+          attribute="class"
+          storageKey="theme"
+          defaultTheme="system"
+          enableSystem
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )
