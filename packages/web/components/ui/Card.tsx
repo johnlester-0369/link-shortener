@@ -1,5 +1,8 @@
-import React from 'react'
 import { cn } from '@/utils/cn.util'
+import {
+  forwardRefWithAs,
+  type PolymorphicComponentPropsWithRef,
+} from '@/utils/polymorphic.util'
 
 // ============================================================================
 // Types
@@ -57,7 +60,10 @@ type CardPadding = 'none' | 'sm' | 'md' | 'lg'
 // Root Component
 // ============================================================================
 
-export interface CardRootProps extends React.HTMLAttributes<HTMLDivElement> {
+/**
+ * Base props for Card.Root component (excluding HTML attributes)
+ */
+export type CardRootOwnProps = {
   /**
    * Visual variant style
    * @default 'elevated'
@@ -110,6 +116,18 @@ export interface CardRootProps extends React.HTMLAttributes<HTMLDivElement> {
     | 'warning'
     | 'info'
 }
+
+/**
+ * Polymorphic Card.Root props - supports `as` prop for rendering as different elements
+ * @example
+ * ```tsx
+ * <Card.Root as="article">Article content</Card.Root>
+ * <Card.Root as="section">Section content</Card.Root>
+ * <Card.Root as="a" href="/details">Clickable card</Card.Root>
+ * ```
+ */
+export type CardRootProps<T extends React.ElementType = 'div'> =
+  PolymorphicComponentPropsWithRef<T, CardRootOwnProps>
 
 /**
  * Surface level to Tailwind class mapping
@@ -221,76 +239,79 @@ const outlinedColorClasses: Record<CardColor, string> = {
  * <Card.Root variant="outlined" color="primary">
  *   <Card.Body>Outlined content</Card.Body>
  * </Card.Root>
+ *
+ * // Polymorphic usage
+ * <Card.Root as="article">Article content</Card.Root>
+ * <Card.Root as="a" href="/details">Clickable card</Card.Root>
  * ```
  */
-const CardRoot = React.forwardRef<HTMLDivElement, CardRootProps>(
-  (
-    {
-      variant = 'elevated',
-      color = 'neutral',
-      surfaceLevel = 'default',
-      shadowElevation = 0,
-      bordered = false,
-      padding = 'md',
-      interactive = false,
-      gradient: deprecatedGradient,
-      className,
-      children,
-      ...props
-    },
-    ref,
-  ) => {
-    // Handle deprecated gradient prop
-    const effectiveVariant = deprecatedGradient ? 'gradient' : variant
-    const effectiveColor = deprecatedGradient ? deprecatedGradient : color
+const CardRoot = forwardRefWithAs<'div', CardRootOwnProps>((props, ref) => {
+  const {
+    as,
+    variant = 'elevated',
+    color = 'neutral',
+    surfaceLevel = 'default',
+    shadowElevation = 0,
+    bordered = false,
+    padding = 'md',
+    interactive = false,
+    gradient: deprecatedGradient,
+    className,
+    children,
+    ...rest
+  } = props
 
-    // Determine background/text classes based on variant
-    const getVariantClasses = (): string => {
-      switch (effectiveVariant) {
-        case 'filled':
-          return filledColorClasses[effectiveColor]
-        case 'gradient':
-          return gradientColorClasses[effectiveColor]
-        case 'outlined':
-          return cn('border', outlinedColorClasses[effectiveColor])
-        case 'elevated':
-        default:
-          return cn(
-            surfaceLevelClasses[surfaceLevel],
-            'text-on-surface',
-            bordered && 'border border-outline-variant',
-          )
-      }
+  const Component = as || 'div'
+  // Handle deprecated gradient prop
+  const effectiveVariant = deprecatedGradient ? 'gradient' : variant
+  const effectiveColor = deprecatedGradient ? deprecatedGradient : color
+
+  // Determine background/text classes based on variant
+  const getVariantClasses = (): string => {
+    switch (effectiveVariant) {
+      case 'filled':
+        return filledColorClasses[effectiveColor]
+      case 'gradient':
+        return gradientColorClasses[effectiveColor]
+      case 'outlined':
+        return cn('border', outlinedColorClasses[effectiveColor])
+      case 'elevated':
+      default:
+        return cn(
+          surfaceLevelClasses[surfaceLevel],
+          'text-on-surface',
+          bordered && 'border border-outline-variant',
+        )
     }
+  }
 
-    // Determine if we should show shadow
-    const showShadow =
-      effectiveVariant === 'elevated' || effectiveVariant === 'filled'
+  // Determine if we should show shadow
+  const showShadow =
+    effectiveVariant === 'elevated' || effectiveVariant === 'filled'
 
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          // Base styles
-          'rounded-xl',
-          // Variant-specific styles
-          getVariantClasses(),
-          // Shadow elevation (only for elevated and filled variants)
-          showShadow && shadowElevationClasses[shadowElevation],
-          // Padding
-          padding !== 'none' && paddingClasses[padding],
-          // Interactive state
-          interactive &&
-            'cursor-pointer hover:scale-[1.02] active:scale-[0.99] transition-transform duration-fast ease-standard',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    )
-  },
-)
+  return (
+    <Component
+      ref={ref}
+      className={cn(
+        // Base styles
+        'rounded-xl',
+        // Variant-specific styles
+        getVariantClasses(),
+        // Shadow elevation (only for elevated and filled variants)
+        showShadow && shadowElevationClasses[shadowElevation],
+        // Padding
+        padding !== 'none' && paddingClasses[padding],
+        // Interactive state
+        interactive &&
+          'cursor-pointer hover:scale-[1.02] active:scale-[0.99] transition-transform duration-fast ease-standard',
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </Component>
+  )
+})
 
 CardRoot.displayName = 'Card.Root'
 
@@ -298,7 +319,10 @@ CardRoot.displayName = 'Card.Root'
 // Header Component
 // ============================================================================
 
-export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+/**
+ * Base props for Card.Header component
+ */
+export type CardHeaderOwnProps = {
   /**
    * Whether to show a divider below the header
    * @default false
@@ -307,25 +331,31 @@ export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
+ * Polymorphic Card.Header props
+ */
+export type CardHeaderProps<T extends React.ElementType = 'div'> =
+  PolymorphicComponentPropsWithRef<T, CardHeaderOwnProps>
+
+/**
  * Card.Header - Header section for card title and actions
  */
-const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
-  ({ withDivider = false, className, children, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          'flex items-start justify-between',
-          withDivider ? 'pb-4 mb-4 border-b border-current/20' : 'mb-4',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    )
-  },
-)
+const CardHeader = forwardRefWithAs<'div', CardHeaderOwnProps>((props, ref) => {
+  const { as, withDivider = false, className, children, ...rest } = props
+  const Component = as || 'div'
+  return (
+    <Component
+      ref={ref}
+      className={cn(
+        'flex items-start justify-between',
+        withDivider ? 'pb-4 mb-4 border-b border-current/20' : 'mb-4',
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </Component>
+  )
+})
 
 CardHeader.displayName = 'Card.Header'
 
@@ -333,35 +363,44 @@ CardHeader.displayName = 'Card.Header'
 // Title Component
 // ============================================================================
 
-export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
-  /**
-   * Heading level
-   * @default 'h3'
-   */
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-}
+/**
+ * Base props for Card.Title component
+ */
+export type CardTitleOwnProps = object
+
+/**
+ * Polymorphic Card.Title props
+ * @example
+ * ```tsx
+ * <Card.Title as="h1">Main Title</Card.Title>
+ * <Card.Title as="h2">Section Title</Card.Title>
+ * <Card.Title as="span">Inline Title</Card.Title>
+ * ```
+ */
+export type CardTitleProps<T extends React.ElementType = 'h3'> =
+  PolymorphicComponentPropsWithRef<T, CardTitleOwnProps>
 
 /**
  * Card.Title - Title text for the card
  * Inherits text color from parent (supports all variants)
  */
-const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
-  ({ as: Component = 'h3', className, children, ...props }, ref) => {
-    return (
-      <Component
-        ref={ref}
-        className={cn(
-          'text-title-lg font-semibold leading-tight',
-          'text-inherit',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </Component>
-    )
-  },
-)
+const CardTitle = forwardRefWithAs<'h3', CardTitleOwnProps>((props, ref) => {
+  const { as, className, children, ...rest } = props
+  const Component = as || 'h3'
+  return (
+    <Component
+      ref={ref}
+      className={cn(
+        'text-title-lg font-semibold leading-tight',
+        'text-inherit',
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </Component>
+  )
+})
 
 CardTitle.displayName = 'Card.Title'
 
@@ -369,27 +408,35 @@ CardTitle.displayName = 'Card.Title'
 // Description Component
 // ============================================================================
 
-export type CardDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>
+/**
+ * Base props for Card.Description component
+ */
+export type CardDescriptionOwnProps = object
+
+/**
+ * Polymorphic Card.Description props
+ */
+export type CardDescriptionProps<T extends React.ElementType = 'p'> =
+  PolymorphicComponentPropsWithRef<T, CardDescriptionOwnProps>
 
 /**
  * Card.Description - Subtitle or description text
  */
-const CardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  CardDescriptionProps
->(({ className, children, ...props }, ref) => {
+const CardDescription = forwardRefWithAs<'p', CardDescriptionOwnProps>((props, ref) => {
+  const { as, className, children, ...rest } = props
+  const Component = as || 'p'
   return (
-    <p
+    <Component
       ref={ref}
       className={cn(
         'text-body-sm mt-1.5 leading-relaxed',
         'text-inherit opacity-80',
         className,
       )}
-      {...props}
+      {...rest}
     >
       {children}
-    </p>
+    </Component>
   )
 })
 
@@ -399,28 +446,37 @@ CardDescription.displayName = 'Card.Description'
 // Body Component
 // ============================================================================
 
-export type CardBodyProps = React.HTMLAttributes<HTMLDivElement>
+/**
+ * Base props for Card.Body component
+ */
+export type CardBodyOwnProps = object
+
+/**
+ * Polymorphic Card.Body props
+ */
+export type CardBodyProps<T extends React.ElementType = 'div'> =
+  PolymorphicComponentPropsWithRef<T, CardBodyOwnProps>
 
 /**
  * Card.Body - Main content area of the card
  */
-const CardBody = React.forwardRef<HTMLDivElement, CardBodyProps>(
-  ({ className, children, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          'text-body-md leading-relaxed',
-          'text-inherit',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    )
-  },
-)
+const CardBody = forwardRefWithAs<'div', CardBodyOwnProps>((props, ref) => {
+  const { as, className, children, ...rest } = props
+  const Component = as || 'div'
+  return (
+    <Component
+      ref={ref}
+      className={cn(
+        'text-body-md leading-relaxed',
+        'text-inherit',
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </Component>
+  )
+})
 
 CardBody.displayName = 'Card.Body'
 
@@ -428,7 +484,10 @@ CardBody.displayName = 'Card.Body'
 // Footer Component
 // ============================================================================
 
-export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+/**
+ * Base props for Card.Footer component
+ */
+export type CardFooterOwnProps = {
   /**
    * Whether to show a divider above the footer
    * @default false
@@ -441,7 +500,13 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   align?: 'left' | 'center' | 'right' | 'between'
 }
 
-const alignClasses: Record<NonNullable<CardFooterProps['align']>, string> = {
+/**
+ * Polymorphic Card.Footer props
+ */
+export type CardFooterProps<T extends React.ElementType = 'div'> =
+  PolymorphicComponentPropsWithRef<T, CardFooterOwnProps>
+
+const alignClasses: Record<NonNullable<CardFooterOwnProps['align']>, string> = {
   left: 'justify-start',
   center: 'justify-center',
   right: 'justify-end',
@@ -451,27 +516,24 @@ const alignClasses: Record<NonNullable<CardFooterProps['align']>, string> = {
 /**
  * Card.Footer - Footer section for actions
  */
-const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
-  (
-    { withDivider = false, align = 'right', className, children, ...props },
-    ref,
-  ) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          'flex items-center gap-3',
-          alignClasses[align],
-          withDivider ? 'pt-4 mt-4 border-t border-current/20' : 'mt-4',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    )
-  },
-)
+const CardFooter = forwardRefWithAs<'div', CardFooterOwnProps>((props, ref) => {
+  const { as, withDivider = false, align = 'right', className, children, ...rest } = props
+  const Component = as || 'div'
+  return (
+    <Component
+      ref={ref}
+      className={cn(
+        'flex items-center gap-3',
+        alignClasses[align],
+        withDivider ? 'pt-4 mt-4 border-t border-current/20' : 'mt-4',
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </Component>
+  )
+})
 
 CardFooter.displayName = 'Card.Footer'
 

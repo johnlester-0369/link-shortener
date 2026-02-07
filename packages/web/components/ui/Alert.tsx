@@ -1,8 +1,11 @@
 'use client'
 
-import React from 'react'
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react'
 import { cn } from '@/utils/cn.util'
+import {
+  forwardRefWithAs,
+  type PolymorphicComponentPropsWithRef,
+} from '@/utils/polymorphic.util'
 
 /**
  * Alert visual style variants
@@ -36,7 +39,10 @@ export interface AlertAction {
   variant?: 'primary' | 'secondary'
 }
 
-export interface AlertProps {
+/**
+ * Base props for Alert component (excluding HTML attributes)
+ */
+export type AlertOwnProps = {
   /** Visual variant style */
   variant?: AlertVariant
   /** Color scheme - determines semantic meaning */
@@ -55,9 +61,18 @@ export interface AlertProps {
   onClose?: () => void
   /** Action buttons to display */
   actions?: AlertAction[]
-  /** Additional CSS classes */
-  className?: string
 }
+
+/**
+ * Polymorphic Alert props - supports `as` prop for rendering as different elements
+ * @example
+ * ```tsx
+ * <Alert as="section" title="Info" />
+ * <Alert as="article" title="News" />
+ * ```
+ */
+export type AlertProps<T extends React.ElementType = 'div'> =
+  PolymorphicComponentPropsWithRef<T, AlertOwnProps>
 
 /**
  * Default icons for each color
@@ -243,26 +258,36 @@ const getActionButtonStyles = (
  *     { label: 'Discard', onClick: handleDiscard, variant: 'secondary' },
  *   ]}
  * />
+ *
+ * // Polymorphic usage
+ * <Alert as="section" title="Info" />
+ * <Alert as="article" title="News" />
  * ```
  */
-const Alert: React.FC<AlertProps> = ({
-  variant = 'tonal',
-  color = 'info',
-  size = 'md',
-  title,
-  message,
-  icon,
-  hideIcon = false,
-  onClose,
-  actions,
-  className = '',
-}) => {
+const Alert = forwardRefWithAs<'div', AlertOwnProps>((props, ref) => {
+  const {
+    as,
+    variant = 'tonal',
+    color = 'info',
+    size = 'md',
+    title,
+    message,
+    icon,
+    hideIcon = false,
+    onClose,
+    actions,
+    className,
+    ...rest
+  } = props
+
+  const Component = as || 'div'
   const variantStyles = variantStyleMap[variant]
   const colorStyle = variantStyles[color]
   const displayIcon = icon ?? colorIcons[color]
 
   return (
-    <div
+    <Component
+      ref={ref}
       className={cn(
         'rounded-lg border animate-in fade-in duration-fast flex items-start gap-3',
         sizeStyles[size],
@@ -271,6 +296,7 @@ const Alert: React.FC<AlertProps> = ({
       )}
       role="alert"
       aria-live={onClose ? 'polite' : undefined}
+      {...rest}
     >
       {/* Icon */}
       {!hideIcon && (
@@ -334,8 +360,10 @@ const Alert: React.FC<AlertProps> = ({
           />
         </button>
       )}
-    </div>
+    </Component>
   )
-}
+})
+
+Alert.displayName = 'Alert'
 
 export default Alert

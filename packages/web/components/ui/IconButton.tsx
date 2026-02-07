@@ -2,6 +2,10 @@
 
 import React from 'react'
 import { cn } from '@/utils/cn.util'
+import {
+  forwardRefWithAs,
+  type PolymorphicComponentPropsWithRef,
+} from '@/utils/polymorphic.util'
 
 type Variant =
   | 'primary'
@@ -12,13 +16,26 @@ type Variant =
   | 'danger'
 type Size = 'sm' | 'md' | 'lg'
 
-export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+/**
+ * Base props for IconButton component (excluding HTML attributes)
+ */
+export type IconButtonOwnProps = {
   icon: React.ReactNode
   variant?: Variant
   size?: Size
   isLoading?: boolean
   'aria-label': string
 }
+
+/**
+ * Polymorphic IconButton props - supports `as` prop for rendering as different elements
+ * @example
+ * ```tsx
+ * <IconButton as="a" href="/settings" icon={<Settings />} aria-label="Settings" />
+ * ```
+ */
+export type IconButtonProps<T extends React.ElementType = 'button'> =
+  PolymorphicComponentPropsWithRef<T, IconButtonOwnProps>
 
 /**
  * Base icon button styles
@@ -156,11 +173,15 @@ const Spinner: React.FC<{ size: Size }> = ({ size }) => {
  * // Filled variants for emphasis
  * <IconButton icon={<Plus />} variant="primary" aria-label="Add" />
  * <IconButton icon={<Trash />} variant="danger" aria-label="Delete" />
+ *
+ * // Polymorphic usage
+ * <IconButton as="a" href="/settings" icon={<Settings />} aria-label="Settings" />
  * ```
  */
-const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
-  (
-    {
+const IconButton = forwardRefWithAs<'button', IconButtonOwnProps>(
+  (props, ref) => {
+    const {
+      as,
       icon,
       variant = 'text',
       size = 'md',
@@ -169,10 +190,10 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       disabled,
       type,
       'aria-label': ariaLabel,
-      ...props
-    },
-    ref,
-  ) => {
+      ...rest
+    } = props
+
+    const Component = as || 'button'
     const computedClass = cn(
       base,
       variantClasses[variant],
@@ -184,15 +205,15 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
     const isDisabled = Boolean(disabled || isLoading)
 
     return (
-      <button
+      <Component
         ref={ref}
-        type={type ?? 'button'}
+        type={Component === 'button' ? (type ?? 'button') : undefined}
+        disabled={Component === 'button' ? isDisabled : undefined}
         className={computedClass}
-        disabled={isDisabled}
         aria-label={ariaLabel}
         aria-busy={isLoading || undefined}
         aria-disabled={isDisabled || undefined}
-        {...props}
+        {...rest}
       >
         {isLoading ? (
           <Spinner size={size} />
@@ -201,7 +222,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             {icon}
           </span>
         )}
-      </button>
+      </Component>
     )
   },
 )
