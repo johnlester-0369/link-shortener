@@ -1,3 +1,5 @@
+import { config } from './config'
+
 interface RequestConfig<TBody = unknown> {
   method?: string
   headers?: Record<string, string>
@@ -298,10 +300,9 @@ class ApiClient {
   }
 }
 
-const baseUrl = 'http://localhost:3005' //server url
 // Create and export singleton instance
 const apiClient = new ApiClient({
-  baseURL: baseUrl,
+  baseURL: config.apiBaseUrl,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
