@@ -1,5 +1,6 @@
 
 'use client'
+import { useLinkShortener } from '@/hooks/useLinkShortener'
 
 import React, { useState } from 'react'
 import ClipboardButton from '@/components/ui/ClipboardButton'
@@ -28,28 +29,27 @@ const LinkShortenerForm: React.FC = () => {
 
   const handleShorten = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-    setShortUrl('')
-
-    if (!longUrl.trim()) {
-      setError('Please enter a URL to shorten')
-      return
-    }
-
-    if (!validateUrl(longUrl)) {
-      setError('Please enter a valid URL (including http:// or https://)')
-      return
-    }
-
-    setIsLoading(true)
-
-    // Simulate API call for demo purposes
-    setTimeout(() => {
-      const mockShortCode = customAlias || Math.random().toString(36).substring(7)
-      setShortUrl(`https://lnk.sh/${mockShortCode}`)
-      setIsLoading(false)
-    }, 1000)
+    await createShortLink({
+      longUrl,
+      customAlias: customAlias || undefined,
+    })
   }
+
+  const { createShortLink, isSubmitting } = useLinkShortener({
+    onSuccess: (message, link) => {
+      setShortUrl(link.shortUrl)
+      setError('')
+    },
+    onError: (message) => {
+      setError(message)
+      setShortUrl('')
+    },
+  })
+
+  // Sync hook loading state with component state
+  React.useEffect(() => {
+    setIsLoading(isSubmitting)
+  }, [isSubmitting])
 
   const handleReset = () => {
     setLongUrl('')
