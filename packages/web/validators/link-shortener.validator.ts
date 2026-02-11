@@ -73,7 +73,7 @@ export function validateCreateShortLink(
 
   if (!result.success) {
     // Extract first error message for user-friendly feedback
-    const firstError = result.error.errors[0]
+    const firstError = result.error.issues[0]
     return {
       success: false,
       error: firstError?.message ?? 'Validation failed',

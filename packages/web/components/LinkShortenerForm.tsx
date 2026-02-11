@@ -18,15 +18,6 @@ const LinkShortenerForm: React.FC = () => {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const validateUrl = (url: string): boolean => {
-    try {
-      new URL(url)
-      return true
-    } catch {
-      return false
-    }
-  }
-
   const handleShorten = async (e: React.FormEvent) => {
     e.preventDefault()
     await createShortLink({
