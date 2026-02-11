@@ -29,6 +29,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'LinkShort' }],
   creator: 'LinkShort',
   publisher: 'LinkShort',
+  // Generated icon replaces static favicon.ico for consistent branding
+  icons: {
+    icon: '/icon',
+    apple: '/icon',
+  },
   robots: {
     index: true,
     follow: true,
