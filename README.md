@@ -1,6 +1,8 @@
 
 # LinkShort
 
+![LinkShort preview](./docs/preview.png)
+
 A full-stack URL shortener monorepo. Built with Next.js 16 + React 19 on the frontend and NestJS on the backend, backed by Firebase Firestore.
 
 ## Packages
