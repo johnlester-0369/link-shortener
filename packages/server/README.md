@@ -1,65 +1,75 @@
-
 # LinkShort Server
 
-Backend API service for the LinkShort URL shortener application. Built with NestJS and TypeScript, providing a robust and scalable link management system.
+Backend API service for the LinkShort URL shortener. Built with NestJS and TypeScript, using Firebase Firestore as the database via Typesaurus.
+
+## Architecture
+
+```
+         HTTP Request
+              │
+              ▼
+┌─────────────────────────┐
+│       Controller        │
+│  link-shortener.ctrl    │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│        Service          │
+│  link-shortener.svc     │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐     ┌──────────────────┐
+│       Repository        │────►│  Firebase        │
+│  link-shortener.repo    │     │  Firestore       │
+└─────────────────────────┘     └──────────────────┘
+```
 
 ## Tech Stack
 
-- **Framework:** [NestJS](https://nestjs.com/) - A progressive Node.js framework
+- **Framework:** [NestJS](https://nestjs.com/) — A progressive Node.js framework
 - **Language:** TypeScript 5.x
-- **Database:** Firebase Firestore (via [Typesaurus](https://typesaurus.com/))
+- **Database:** Firebase Firestore via [Typesaurus](https://typesaurus.com/)
 - **Validation:** class-validator & class-transformer
 - **Testing:** Jest
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
-
-- Node.js (v20 or higher recommended)
-- npm or yarn package manager
+- Node.js v20 or higher
+- npm or yarn
 - Firebase project with Firestore enabled
 
 ## Environment Setup
 
-1. Create a `.env` file in the server directory based on `.env.example`:
+Create a `.env` file in the server directory based on `.env.example`:
 
 ```bash
 cp .env.example .env
 ```
 
-2. Configure your Firebase credentials and other environment variables in the `.env` file.
+Configure your Firebase credentials and other environment variables in the `.env` file.
 
 ## Getting Started
 
-### Installation
-
-Install dependencies:
+**Install dependencies:**
 
 ```bash
 npm install
 ```
 
-### Development
-
-Run the development server with hot-reload:
+**Development** (with hot-reload):
 
 ```bash
 npm run start:dev
 ```
 
-The server will start on the port specified in your environment configuration (default: http://localhost:3000).
+The server starts on the port specified in your environment configuration (default: `http://localhost:3005`).
 
-### Production
-
-Build the application:
+**Production:**
 
 ```bash
 npm run build
-```
-
-Start the production server:
-
-```bash
 npm run start:prod
 ```
 
@@ -87,8 +97,6 @@ server/
 │   ├── app.controller.ts # Root controller
 │   ├── app.service.ts    # Root service
 │   └── main.ts           # Application entry point
-├── dist/                 # Compiled output (generated)
-├── node_modules/         # Dependencies (generated)
 ├── .env                  # Environment variables (create from .env.example)
 ├── .env.example          # Environment template
 ├── nest-cli.json         # NestJS CLI configuration
@@ -97,17 +105,11 @@ server/
 └── tsconfig.build.json   # Build-specific TypeScript config
 ```
 
-## API Documentation
+## API
 
-The API follows RESTful principles and provides endpoints for URL shortening operations. Once the server is running, you can access the API at the configured base URL.
+The API follows RESTful principles and provides endpoints for URL shortening operations. Once the server is running, the API is accessible at the configured base URL.
 
 ## Code Quality
 
-This project uses ESLint and Prettier to maintain code quality and consistency:
-
-- **ESLint:** TypeScript-aware linting with recommended rules
-- **Prettier:** Automatic code formatting with single quotes and trailing commas
-
-Configuration files:
-- `eslint.config.mjs` - ESLint rules and TypeScript integration
-- `.prettierrc` - Code formatting preferences
+- **ESLint:** TypeScript-aware linting with recommended rules (`eslint.config.mjs`)
+- **Prettier:** Single quotes and trailing commas (`.prettierrc`)

@@ -1,12 +1,30 @@
 # LinkShort
 
-A full-stack URL shortener monorepo. Built with Next.js 16 + React 19 on the frontend and NestJS on the backend, backed by Firebase Firestore.
+Paste a long URL, get a short one. LinkShort is a full-stack URL shortener monorepo — Next.js frontend, NestJS backend, Firebase Firestore for persistence.
 
 ---
 
 ![LinkShort preview](./docs/preview.png)
 
 ---
+
+## Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                         LinkShort                            │
+│                                                              │
+│  ┌──────────────────┐   POST /shorten   ┌─────────────────┐  │
+│  │  packages/web    │ ────────────────► │ packages/server │  │
+│  │  Next.js  :3000  │ ◄──────────────── │ NestJS    :3005 │  │
+│  └──────────────────┘   short URL       └────────┬────────┘  │
+│                                                  │           │
+│                                         ┌────────▼────────┐  │
+│                                         │  Firebase       │  │
+│                                         │  Firestore      │  │
+│                                         └─────────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+```
 
 ## Packages
 
@@ -76,12 +94,10 @@ make start SERVER_PORT=3010
 make preview WEB_PORT=4000
 ```
 
-**How it works under the hood:**
-
-Both frameworks receive their port via an inline `PORT=` environment variable prepended to the npm command (e.g. `PORT=4000 npm run dev`):
+Both frameworks receive their port via an inline `PORT=` environment variable prepended to the npm command:
 
 - **Next.js** — supports `PORT=<n> next dev` as documented in the [official CLI reference](https://nextjs.org/docs/app/api-reference/cli/next). Note: `PORT` cannot be set in `.env` because the HTTP server initialises before env files are loaded.
-- **NestJS** — has no `--port` CLI flag. The application reads `process.env.PORT` inside `main.ts` at bootstrap (`app.listen(process.env.PORT ?? 3005)`), so the same inline env var approach applies ([NestJS configuration docs](https://docs.nestjs.com/techniques/configuration)).
+- **NestJS** — reads `process.env.PORT` inside `main.ts` at bootstrap (`app.listen(process.env.PORT ?? 3005)`), so the same inline env var approach applies ([NestJS configuration docs](https://docs.nestjs.com/techniques/configuration)).
 
 ## Environment Setup
 
